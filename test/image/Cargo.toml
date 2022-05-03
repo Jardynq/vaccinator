@@ -1,0 +1,40 @@
+[package]
+name = "image"
+version = "0.1.0"
+authors = ["svorr <svorre2304@gmail.com>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[dependencies]
+nt-syscall = { path = "../../../nt-syscall", features = ["default"] }
+pe-image = { path = "../../../pe-image" }
+
+
+[dependencies.ntapi]
+version = "0.3.6"
+features = [
+	"user",
+	"func-types",
+	"impl-default"
+]
+
+
+[dependencies.winapi]
+version = "0.3.8"
+features = [
+	"impl-debug",
+	"impl-default",
+
+	"minwindef",
+	"winnt",
+	"winuser",
+	"psapi",
+	"processthreadsapi",
+	"ntdef",
+	"libloaderapi",
+	"handleapi",
+	"winbase",
+]

@@ -1,0 +1,34 @@
+rustflags = [
+	"-crate-type", "cdylib",
+	"-C", "target-feature=-mmx,-sse",
+	"-C", "target-cpu=generic",
+	"-C", "no-vectorize-loops",
+	"-C", "no-vectorize-slp",
+	"-C", "code-model=large",
+	"-C", "force-frame-pointers=no",
+	"-C", "relocation-model=ropi-rwpi",
+	"-C", "split-debuginfo=packed",
+	"-C", "no-redzone=on",
+]
+
+
+[unstable]
+build-std-features = [
+	"compiler-builtins-mem"
+]
+build-std = [
+	"core",
+	"compiler_builtins"
+]
+
+
+[profile.release]
+opt-level = 'z'
+debug = true
+debug-assertions = false
+overflow-checks = false
+lto = 'fat'
+panic = 'abort'
+incremental = false
+codegen-units = 1
+rpath = false

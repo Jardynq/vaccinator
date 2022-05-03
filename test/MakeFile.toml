@@ -1,0 +1,63 @@
+[tasks.build-test-program-x86_64]
+script_runner = "@duckscript"
+script = ["exec cargo build -q --release --target x86_64-pc-windows-msvc -p program"]
+[tasks.build-test-program-i686]
+script_runner = "@duckscript"
+script = ["exec cargo build -q --release --target i686-pc-windows-msvc -p program"]
+
+[tasks.build-test-image-x86_64]
+script_runner = "@duckscript"
+script = ["exec cargo build -q --release --target x86_64-pc-windows-msvc -p image"]
+[tasks.build-test-image-i686]
+script_runner = "@duckscript"
+script = ["exec cargo build -q --release --target i686-pc-windows-msvc -p image"]
+
+[tasks.build-test-dummy-x86_64]
+script_runner = "@duckscript"
+script = ["exec cargo build -q --release --target x86_64-pc-windows-msvc -p dummy"]
+[tasks.build-test-dummy-i686]
+script_runner = "@duckscript"
+script = ["exec cargo build -q --release --target i686-pc-windows-msvc -p dummy"]
+
+
+
+
+[tasks.build-test]
+run_task = { name = [
+	"build-test-program-x86_64",
+	"build-test-program-i686",
+
+	"build-test-image-x86_64",
+	"build-test-image-i686",
+
+	"build-test-dummy-x86_64",
+	"build-test-dummy-i686",
+], parallel = true, fork = true }
+
+
+[tasks.share-test]
+script_runner = "@duckscript"
+script = [
+'''
+	alias on_error echo
+
+	fn move
+		rm ${3}/${1}
+		mv ${2}/${1} ${3}
+	end
+	fn share
+		out = set "./shared/${1}/test/"
+		arch = set "${1}-pc-windows-msvc"
+		
+		move program.exe ./target/${arch}/release/ ${out}
+		move image.dll ./target/${arch}/release/ ${out}
+		move dummy.dll ./target/${arch}/release/ ${out}
+	end
+
+	share x86_64
+	share i686
+'''
+]
+dependencies = [
+	"build-test",
+]

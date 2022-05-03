@@ -1,0 +1,4 @@
+/target
+/shared
+*.log
+Cargo.lock

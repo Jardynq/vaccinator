@@ -1,0 +1,125 @@
+# I have to use duckscript to capture output since -q  does not work >:(
+# Otherwise the console and I have a seizure because of all the parallelized scripts printing
+# I also have to cd into the loader dir, since building from external, fucks with it
+
+extend = [
+ 	{path = "./test/MakeFile.toml" },
+]
+
+[config]
+default_to_workspace = false
+reduce_output = true
+time_summary = true
+
+
+
+
+[tasks.build-extractor]
+script_runner = "@duckscript"
+script = ["shutup = exec cargo build --release -p extractor"]
+
+
+[tasks.build-loader-x86_64]
+condition = { channels = [ "nightly" ] }
+script_runner = "@duckscript"
+script = [
+'''
+	cd ./loader
+	exec cargo +nightly build -q --release --target=x86_64-pc-windows-msvc --features=debug
+'''
+]
+
+[tasks.build-loader-i686]
+condition = { channels = [ "nightly" ] }
+script_runner = "@duckscript"
+script = [
+'''
+	cd ./loader
+	exec cargo +nightly build -q --release --target=i686-pc-windows-msvc --features=debug
+'''
+]
+
+[tasks.build-loader]
+condition = { channels = [ "nightly" ] }
+run_task = { name = [ "build-loader-x86_64", "build-loader-i686" ], parallel = true, fork = true }
+
+
+
+
+[tasks.share-loader]
+script_runner = "@duckscript"
+script = [
+'''
+	alias on_error echo
+
+	fn move
+		rm ${3}/${1}
+		mv ${2}/${1} ${3}
+	end
+	fn share
+		out = set "./shared/${1}"
+		arch = set "${1}-pc-windows-msvc"
+		move loader.dll ./target/${arch}/release/ ${out}
+		move loader.pdb ./target/${arch}/release/ ${out}
+	end
+
+	share x86_64
+	share i686
+	move extractor.exe ./target/release/ ./shared/
+'''
+]
+dependencies = [
+	"build-extractor",
+	"build-loader",
+]
+
+[tasks.share]
+run_task = { name = [ "share-loader", "share-test" ], parallel = true, fork = true }
+
+
+
+
+[tasks.extract]
+script_runner = "@duckscript"
+script = [
+'''
+	alias on_error echo
+
+	symbols = set ""
+	fn add_symbol
+		symbols = set "${symbols} ${1}"
+	end
+
+	fn dump
+		out_path = canonicalize "./shared/${1}/"
+
+		# Trim the '\\?\' prefix from the path
+		#out_path = substring ${out_path} 4
+		# For some reason the canonicalize doesn't include this prefix anymore???
+		# pretty breaking imo, but it's not noted in any changelog		
+
+		image_path = set "${out_path}/loader.dll"
+		pdb_path = set "${out_path}/loader.pdb"
+
+		exec ./shared/extractor --image ${image_path} --pdb ${pdb_path} --out ${out_path} --symbols ${symbols} --trim 
+	end
+
+
+	add_symbol heavens_gate
+	add_symbol entry
+	add_symbol parse_header
+	add_symbol find_module
+	add_symbol load_module
+	add_symbol map_module
+	add_symbol link_module
+	add_symbol resolve_function
+	add_symbol read_file
+
+	dump x86_64
+	dump i686
+'''
+]
+dependencies = [
+	"share-loader"
+]
+

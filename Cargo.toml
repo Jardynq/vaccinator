@@ -1,0 +1,70 @@
+[package]
+authors = ["svorr <svorre2304@gmail.com>"]
+edition = "2021"
+name = "vaccinator"
+version = "0.1.0"
+
+
+[workspace]
+members = [
+	"extractor",
+	"interface",
+	"loader",
+	"test/program",
+	"test/image",
+	"test/dummy",
+]
+
+
+
+
+[dependencies]
+ntapi = "0.3.6"
+const-random = "0.1.13"
+oorandom = "11.1.3"
+obfstr = "0.3.0"
+log = "0.4.14"
+simplelog = "0.10.0"
+
+
+[dependencies.interface]
+path = "./interface"
+
+[dependencies.pe-image]
+path = "../pe-image"
+
+[dependencies.nt-syscall]
+path = "../nt-syscall"
+features = [
+	"nt", 
+	"windows_10", 
+]
+
+[dependencies.winapi]
+version = "0.3.9"
+features = [
+	"impl-debug",
+	"impl-default",
+
+	"winnt", 
+	"minwindef", 
+	"ntdef", 
+
+	"heapapi",
+	"memoryapi",
+	"libloaderapi",
+	"errhandlingapi",
+	"processthreadsapi",
+	"sysinfoapi",
+	"winbase",
+	"processenv",
+	"sysinfoapi",
+	"tlhelp32",
+	"wow64apiset",
+]
+
+[dependencies.memoffset]
+version = "0.6.4"
+features = [
+	"unstable_const"
+]

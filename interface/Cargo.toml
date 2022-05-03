@@ -1,0 +1,23 @@
+[package]
+name = "interface"
+version = "0.1.0"
+authors = ["svorr <svorre2304@gmail.com>"]
+edition = "2021"
+
+
+[lib]
+path = "src/lib.rs"
+
+
+[dependencies]
+ntapi = "0.3.6"
+
+[dependencies.nt-syscall]
+path = "../../nt-syscall"
+features = []
+
+[dependencies.winapi]
+version = "0.3.9"
+features = [
+	"minwindef", 
+]
