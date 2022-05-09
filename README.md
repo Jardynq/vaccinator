@@ -24,3 +24,25 @@ There is also a small caveat in loading this way. It does not add the images to 
 A possible solution to this, is to whitelist the images that are required to be added the the list.
 
 I might make a full writeup on all the resaerch, ideas and issues that were encountered in development.
+
+## Project structue
+
+Extracter - A simple program that walks the export table of the input exe, finds the bodies of the supplied functions and copies the binary into a seperate file.
+This is used in tandem with the loader, which compiles to a dll whereafter the extracter extracts the shellcode.
+
+Interface - The definitions for all the code used by the loader. This is used as a shared interface that will allow an injector to pass the correct data to the loader.
+
+Loader - The code that is injected, and does the loading. The code is directly copied into a different program which means, that the code cannot contain absolute pointers. Everything has to be on the stack. For this, a lot of macros_rules! are used, since they are effectly functions that are inlined.
+
+Test - Sample dlls and program, sued for debugging and testing. Dummy is a very simple image, that does nothing. Image is an image that creates a message box with some info about the program and itself. Program is a simple program that runs in a loop. Used for injecting into.
+
+Src - The injector itself. It reads the binary shellcode that the extractor read from the loader, aswell as the image binary itself. Then writes it into the target process. Finally creates (or hijacks) a thread to start running the loader. 
+
+Shared - A directory where all the binaries are pasted, so that the loader does not have to delve into ./target/
+
+
+## Compilation and usage
+I use [cargo-make](https://github.com/sagiegurari/cargo-make) as a build script. Look at MakeFile.toml for more info.<br/>
+To build and prepare the loader use 'cargo make extract', this will compile and extract the loader.<br/>
+To build and prepare the test dummies use 'cargo make share' or 'cargo make share-test'<br/>
+To run the injector itself use 'cargo run'.<br/>
