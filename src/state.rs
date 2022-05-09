@@ -11,9 +11,11 @@ pub trait StateAbstract where Self: Sized {
 	fn initialize_binary(&mut self, shuffle: bool, mode: Mode) -> Vec<u8>;
 }
 
+// TODO: move this into interface
 impl StateAbstract for State {
 	fn new(base: u64, cache_length: u32, link_size: u32, path: Option<u64>, debug: Option<u64>, mut options: Vec<Options>) -> Option<Self> {
-		let ordinals = ordinal!(
+		let ordinals = get_indices_x64!(
+			22000,
 			NtCreateThreadEx, 
 			NtProtectVirtualMemory, 
 			NtAllocateVirtualMemory, 
@@ -22,7 +24,7 @@ impl StateAbstract for State {
 			NtReadFile, 
 			NtQueryInformationFile
 		);
-		if !ordinal_valid!(ordinals) {
+		if !are_indices_valid!(ordinals) {
 			return None;
 		}
 		

@@ -1,5 +1,4 @@
 #![no_std]
-#![feature(asm)]
 #![feature(unchecked_math)]
 #![allow(dead_code)]
 
@@ -208,7 +207,7 @@ pub struct State {
 	pub resolve_function: u32,
 	pub read_file: u32,
 
-	// Syscall ordinals
+	// Syscall indices
 	pub syscall_create_thread: u32,
 	pub syscall_virtual_protect: u32,
 	pub syscall_virtual_allocate: u32,
@@ -240,7 +239,7 @@ pub struct State {
 	// Pointer to the LdrpBaseAddressIndex in ntdll
 	pub ldrp_index_tree: Option<u64>,
 
-	// Pointer to the top of the debug buffer. Null if unused
+	// Pointer to the top of the debug buffer. None if unused
 	pub debug_head: Option<u64>,
 
 	// Loader module cache 

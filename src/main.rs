@@ -515,7 +515,6 @@ unsafe fn test(module_p: usize, data_p: &mut LDR_DATA_TABLE_ENTRY, module_name_p
 fn main() {
 	debug::initialize_logger();
 
-
 	unsafe {
 		println!("build: {}", nt_syscall::peb!().OSBuildNumber);
 
@@ -530,11 +529,12 @@ fn main() {
 
 
 
-	let ordinals = nt_syscall::ordinal!(
+	let ordinals = nt_syscall::get_indices!(
+		22000,
 		NtWriteVirtualMemory, 
 		NtAllocateVirtualMemory
 	);
-	if !ordinal_valid!(ordinals) {
+	if !nt_syscall::are_indices_valid!(ordinals) {
 		println!("Windows build not supported");
 		return;
 	}
@@ -592,12 +592,12 @@ fn main() {
 	};
 
 
-	let is_image_x64 = false;
+	let is_image_x64 = true;
 
 	let image: Vec<u8> = if is_image_x64 {
-		include_bytes!("../shared/x86_64/test/image.dll").to_vec()
+		include_bytes!("../shared/x86_64/test/dummy.dll").to_vec()
 	} else {
-		include_bytes!("../shared/i686/test/image.dll").to_vec()
+		include_bytes!("../shared/i686/test/dummy.dll").to_vec()
 	};
 
 	let headers = pe_image::PeHeaders::read(&image, 0).unwrap();
@@ -705,7 +705,6 @@ fn main() {
 
 		base
 	};
-
 
 
 	// try allocation debug buffer

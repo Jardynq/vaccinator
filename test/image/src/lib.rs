@@ -1,5 +1,4 @@
 #![cfg(windows)]
-#![feature(asm)]
 
 use winapi::shared::minwindef::*;
 use winapi::um::winnt::*;

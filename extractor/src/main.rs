@@ -1,6 +1,7 @@
-#![feature(with_options)]
-
-use std::fs::File;
+use std::fs::{
+	File,
+	OpenOptions,
+};
 use std::path::PathBuf;
 use std::io::{
 	Read,
@@ -18,11 +19,7 @@ use log::{
 	warn,
 	error,
 };
-use clap::{
-	Clap,
-	AppSettings,
-	ValueHint,
-};
+use clap::Parser;
 use pdb::{
 	FallibleIterator,
 	SymbolData,
@@ -36,20 +33,19 @@ use anyhow::{
 
 
 
-#[derive(Clap, Debug, Clone)]
+#[derive(Parser, Debug, Clone)]
 #[clap(version = "0.1")]
-#[clap(setting = AppSettings::ColoredHelp)]
 struct Arguments {
     /// Path to the image file
-	#[clap(short, long, parse(from_os_str), value_hint = ValueHint::AnyPath)]
+	#[clap(short, long, parse(from_os_str), value_hint = clap::ValueHint::AnyPath)]
     image: PathBuf,
 
     /// Path to the pdb file of the image
-	#[clap(short, long, parse(from_os_str), value_hint = ValueHint::AnyPath)]
+	#[clap(short, long, parse(from_os_str), value_hint = clap::ValueHint::AnyPath)]
     pdb: Option<PathBuf>,
 	
 	/// Path to output folder
-	#[clap(short, long, parse(from_os_str), value_hint = ValueHint::AnyPath)]
+	#[clap(short, long, parse(from_os_str), value_hint = clap::ValueHint::AnyPath)]
 	out: PathBuf,
 	
 	/// Silence ouput
@@ -193,7 +189,7 @@ fn dump_symbols(symbols: Vec<Symbol>, image_name: String, limit: usize, args: &A
 				let mut out = args.out.clone();
 				let out_name = image_name.clone() + "." + &symbol.name;
 				out.push(out_name);
-				let mut file = File::with_options()
+				let mut file = OpenOptions::new()
 					.create(true)
 					.write(true)
 					.append(false)

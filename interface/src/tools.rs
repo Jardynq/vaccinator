@@ -215,7 +215,7 @@ macro_rules! timestamp {
 	() => { unsafe {
 		let mut timestamp_lo: u32;
 		let mut timestamp_hi: u32;
-		asm!(
+		core::arch::asm!(
 			"rdtsc",
 			out("eax") timestamp_lo,
 			out("edx") timestamp_hi

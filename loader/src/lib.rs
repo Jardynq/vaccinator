@@ -1,6 +1,5 @@
 #![no_std]
 #![feature(lang_items)]
-#![feature(asm)]
 #![cfg(windows)]
 
 mod no_std {
@@ -26,6 +25,7 @@ use core::mem::{
 	transmute,
 	size_of,
 };
+use core::arch::asm;
 use memoffset::offset_of;
 
 use ntapi::{
@@ -638,6 +638,7 @@ pub unsafe extern "system" fn entry(state_base: usize) {
 		let discardable = flag!(section.Characteristics , IMAGE_SCN_MEM_DISCARDABLE);
 		if discardable {
 			// TODO: wipe data
+			// actually, just don't copy the pages over in the first place
 		}
 
 
@@ -909,7 +910,7 @@ pub unsafe fn find_module(state: &mut State, name: CString, mut name_length: usi
 
 
 
-	// Walk the peb's ldr chain and try to find the dll if it's already loaded
+	// Walk the peb's ldr chain and try to find the dll if it's already loaded by the system
 	let ldr_data = transmute::<_, &mut PEB_LDR_DATA>(peb!().Ldr);
 	let head = (&mut ldr_data.InMemoryOrderModuleList) as *mut LIST_ENTRY;
 	let mut flink = head;
@@ -1952,6 +1953,7 @@ pub unsafe fn read_file(state: &mut State, path: *const u16, length: usize) -> O
 	let attributes: EitherArch<Aligned::<A8, OBJECT_ATTRIBUTES64>, OBJECT_ATTRIBUTES>;
 	let io_status: EitherArch<Aligned::<A8, IO_STATUS_BLOCK64>, IO_STATUS_BLOCK>;
 	match cpu_mode!() {
+		// Windows is running x64
 		CpuMode::EmulatedX86 | CpuMode::NativeX64 => {
 			attributes = EitherArch::X64(
 				Aligned::<A8, _>(OBJECT_ATTRIBUTES64 {
@@ -1971,6 +1973,7 @@ pub unsafe fn read_file(state: &mut State, path: *const u16, length: usize) -> O
 				})
 			);
 		}
+		// Windows is running x86
 		#[cfg(target_arch = "x86")]
 		CpuMode::NativeX86 => {
 			attributes = EitherArch::X86(
@@ -2137,3 +2140,8 @@ pub unsafe fn stub() {
 	// For some reason the pdb parsin li sucks ass so this is needed
 	// TODO: this is temp
 }
+
+
+
+
+// the end :)

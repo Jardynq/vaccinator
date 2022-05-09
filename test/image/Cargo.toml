@@ -9,21 +9,19 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
-nt-syscall = { path = "../../../nt-syscall", features = ["default"] }
-pe-image = { path = "../../../pe-image" }
-
+nt-syscall = { git = "https://github.com/Jardynq/nt-syscall-rs", features = ["default"] }
+pe-image = { git = "https://github.com/Jardynq/pe-image-rs" }
 
 [dependencies.ntapi]
-version = "0.3.6"
+version = "0.3.7"
 features = [
 	"user",
 	"func-types",
 	"impl-default"
 ]
 
-
 [dependencies.winapi]
-version = "0.3.8"
+version = "0.3.9"
 features = [
 	"impl-debug",
 	"impl-default",
