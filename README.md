@@ -11,10 +11,10 @@ Personally, i like writing in rust a lot more than something like c++, since the
 Using this image injector makes it really easy to append [heavens gate](http://blog.rewolf.pl/blog/?p=102) that allows code architecture mixing.
 
 This injector is expected to: <br/>
-inject any image (dll, exe, maybe even C# IL) <br/>
-Inject x86 image -> x64 app <br/>
-Inject x64 image -> x86 app <br/>
-Inject image -> app with same architecture
+- [ ] inject any image (dll, exe, maybe even C# IL) <br/>
+- [ ] Inject x86 image -> x64 app <br/>
+- [ ] Inject x64 image -> x86 app <br/>
+- [x] Inject image -> app with same architecture
 
 It will be able to run on windows 32bit, 64bit and 32bit emulated (WoW64)
 
